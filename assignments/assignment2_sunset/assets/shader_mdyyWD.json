@@ -1,0 +1,34 @@
+{
+ "ver": "0.1",
+ "info": {
+  "id": "mdyyWD",
+  "date": "0",
+  "viewed": 0,
+  "name": "YellowSunrise",
+  "description": "A sunrise",
+  "likes": 0,
+  "published": "Private",
+  "usePreview": 0,
+  "tags": [
+   "sun"
+  ],
+  "hasliked": 0,
+  "parentid": "",
+  "parentname": ""
+ },
+ "renderpass": [
+  {
+   "inputs": [],
+   "outputs": [
+    {
+     "id": "4dfGRr",
+     "channel": 0
+    }
+   ],
+   "code": "float circleSDF(vec2 p, float r){ return length(p)-r; }\n\nvoid mainImage( out vec4 fragColor, in vec2 fragCoord )\n{\n    // Normalized pixel coordinates (from 0 to 1)\n    //vec2 uv = fragCoord/iResolution.xy;\n    vec2 uv = (4.0*fragCoord-iResolution.xy)/iResolution.x;\n\n    // Time varying pixel color\n    vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));\n    \n    //Create Sun\n    vec2 circlePos = vec2(cos(0.3+iTime)+1.0,sin(0.3+iTime));\n    float circleRadius = 0.2;\n    float sun = circleSDF(uv - circlePos,circleRadius);\n    sun = 1.0-smoothstep(-0.01,0.7,sun);\n    \n    //Create hills\n    float hills = 1.0 - step(sin(uv.x*6.0+iTime) * 0.1 + 0.6,uv.y);   \n    \n    //Sky Color\n    vec3 skyColorA = vec3(.3,0.0,0.0);\n    vec3 skyColorB = vec3(0.9,1.0,0.0);\n    vec3 skyColor = mix(skyColorA,skyColorB,uv.y);\n    \n    //Sun Color\n    vec3 sunColorA = vec3(0.0,0.0,0.0);\n    vec3 sunColorB = vec3(1.0,0.0,0.0);\n    vec3 sunColor = mix(sunColorA,sunColorB,uv.y);\n    \n    //Create Landscape\n    float scene = mix(1.0, hills, sun +.5);\n\n    vec3 color = mix(skyColor,sunColor,scene);\n\n\n    // Output to screen\n    fragColor = vec4(color,1.0);\n}",
+   "name": "Image",
+   "description": "",
+   "type": "image"
+  }
+ ]
+}
