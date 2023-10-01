@@ -7,7 +7,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-
+#include <gs/texture.h>
 #include <ew/shader.h>
 
 struct Vertex {
@@ -59,20 +59,46 @@ int main() {
 	ImGui_ImplOpenGL3_Init();
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	
+
+	unsigned int noiseTexture = loadTexture("assets/noise.png");
+	unsigned int grassTexture = loadTexture("assets/Grass.png");
+	unsigned int raccoon = loadTexture("assets/raccoon.png");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
-	glBindVertexArray(quadVAO);
+
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glBindVertexArray(quadVAO);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, grassTexture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, noiseTexture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, raccoon);
+		
+		
+		
+		
+		
 		//Set uniforms
 		shader.use();
+		shader.setInt("_Grass", 0);
+		shader.setInt("_Noise", 1);
+		shader.setInt("_Raccoon", 2);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
+
+
 
 		//Render UI
 		{
