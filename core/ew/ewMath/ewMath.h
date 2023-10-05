@@ -1,5 +1,12 @@
+/*
+	Author: Eric Winebrenner
+*/
+
 #pragma once
 #include <random>
+#include "vec2.h"
+#include "vec3.h"
+#include "mat4.h"
 
 namespace ew {
 	constexpr float PI = 3.14159265359f;
