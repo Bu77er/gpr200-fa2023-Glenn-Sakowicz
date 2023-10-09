@@ -12,6 +12,8 @@
 #include <ew/ewMath/vec3.h>
 #include <ew/procGen.h>
 
+#include "gs/transformations.h"
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 //Square aspect ratio for now. We will account for this with projection later.
@@ -52,6 +54,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	gs::Transform transform;
 	
 	//Cube mesh
 	ew::Mesh cubeMesh(ew::createCube(0.5f));
@@ -64,8 +67,9 @@ int main() {
 
 		//Set uniforms
 		shader.use();
-
+		shader.setMat4("_Model", transform.getModelMatrix());
 		//TODO: Set model matrix uniform
+
 
 		cubeMesh.draw();
 
@@ -76,6 +80,11 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Transform");
+
+			//ImGui::DragFloat3("Position", &cubeTransform.position.x, 0.05f);
+			//ImGui::DragFloat3("Rotation", &cubeTransform.rotaion.x, 1.0f);
+			//ImGui::DragFloat3("Scale", &cubeTransform.scale.x , 0.05f);
+			
 			ImGui::End();
 
 			ImGui::Render();
