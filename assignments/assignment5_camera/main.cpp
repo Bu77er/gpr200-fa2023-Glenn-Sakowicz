@@ -9,16 +9,17 @@
 #include <imgui_impl_opengl3.h>
 
 #include <ew/shader.h>
-#include <ew/ewMath/vec3.h>
 #include <ew/procGen.h>
-
-#include "gs/transformations.h"
+#include <ew/transform.h>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-//Square aspect ratio for now. We will account for this with projection later.
-const int SCREEN_WIDTH = 720;
+//Projection will account for aspect ratio!
+const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
+
+const int NUM_CUBES = 4;
+ew::Transform cubeTransforms[NUM_CUBES];
 
 int main() {
 	printf("Initializing...");
@@ -27,7 +28,7 @@ int main() {
 		return 1;
 	}
 
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Textures", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Camera", NULL, NULL);
 	if (window == NULL) {
 		printf("GLFW failed to create window");
 		return 1;
@@ -54,11 +55,17 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
-	gs::Transform transform;
 	
 	//Cube mesh
 	ew::Mesh cubeMesh(ew::createCube(0.5f));
-	
+
+	//Cube positions
+	for (size_t i = 0; i < NUM_CUBES; i++)
+	{
+		cubeTransforms[i].position.x = i % (NUM_CUBES / 2) - 0.5;
+		cubeTransforms[i].position.y = i / (NUM_CUBES / 2) - 0.5;
+	}
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
@@ -67,11 +74,14 @@ int main() {
 
 		//Set uniforms
 		shader.use();
-		shader.setMat4("_Model", transform.getModelMatrix());
+
 		//TODO: Set model matrix uniform
-
-
-		cubeMesh.draw();
+		for (size_t i = 0; i < NUM_CUBES; i++)
+		{
+			//Construct model matrix
+			shader.setMat4("_Model", cubeTransforms[i].getModelMatrix());
+			cubeMesh.draw();
+		}
 
 		//Render UI
 		{
@@ -79,14 +89,21 @@ int main() {
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui::NewFrame();
 
-			ImGui::Begin("Transform");
-
-			//ImGui::DragFloat3("Position", &cubeTransform.position.x, 0.05f);
-			//ImGui::DragFloat3("Rotation", &cubeTransform.rotaion.x, 1.0f);
-			//ImGui::DragFloat3("Scale", &cubeTransform.scale.x , 0.05f);
-			
+			ImGui::Begin("Settings");
+			ImGui::Text("Cubes");
+			for (size_t i = 0; i < NUM_CUBES; i++)
+			{
+				ImGui::PushID(i);
+				if (ImGui::CollapsingHeader("Transform")) {
+					ImGui::DragFloat3("Position", &cubeTransforms[i].position.x, 0.05f);
+					ImGui::DragFloat3("Rotation", &cubeTransforms[i].rotation.x, 1.0f);
+					ImGui::DragFloat3("Scale", &cubeTransforms[i].scale.x, 0.05f);
+				}
+				ImGui::PopID();
+			}
+			ImGui::Text("Camera");
 			ImGui::End();
-
+			
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
