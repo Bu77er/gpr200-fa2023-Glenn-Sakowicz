@@ -94,6 +94,45 @@ namespace gs
 			0, 0, 0, 1
 		);
 	}
+	inline ew::Mat4 Lookat(ew::Vec3 eye, ew::Vec3 target, ew::Vec3 up)
+	{
+		ew::Vec3 forward = ew::Normalize(target - eye);
+		ew::Vec3 right = ew::Normalize(ew::Cross(up, forward));
+		up = ew::Normalize(ew::Cross(forward, right));
+		ew::Mat4 matrix;
+
+		matrix[0] = ew::Vec4(right, 0.0f);
+		matrix[1] = ew::Vec4(up, 0.0f);
+		matrix[2] = ew::Vec4(-forward, 0.0f);
+		matrix[3] = ew::Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+		return matrix * Translate(-eye);
+	};
+	inline ew::Mat4 Orthographic(float height, float aspect, float near, float far)
+	{
+		float halfHeight = height / 2.0f;
+		float halfWidth = halfHeight * aspect;
+		float depth = far - near;
+
+		return ew::Mat4(
+			2.0f / (2.0f * halfWidth), 0.0f, 0.0f, 0.0f,
+			0.0f, 2.0f / (2.0 * halfHeight), 0.0f, 0.0f,
+			0.0f, 0.0f, -2.0f / depth, 0.0f,
+			0.0f, 0.0f, -(far + near) / depth, 1.0f
+		);
+	};
+	inline ew::Mat4 Perspective(float fov, float aspect, float near, float far)
+	{
+		float x = 1.0f / tan(fov / 2.0f);
+
+		return ew::Mat4(
+			x / aspect, 0.0f, 0.0f, 0.0f,
+			0.0f, x, 0.0f, 0.0f,
+			0.0f, 0.0f, (far + near) / (near - far), -1.0f,
+			0.0f, 0.0f, (2.0f * far * near) / (near - far), 0.0f
+		);
+	};
+
 	struct Transform
 	{
 		ew::Vec3 position = ew::Vec3(0.0f, 0.0f, 0.0f);
