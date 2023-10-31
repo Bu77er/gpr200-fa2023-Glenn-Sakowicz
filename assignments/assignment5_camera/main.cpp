@@ -12,45 +12,12 @@
 #include <ew/procGen.h>
 #include <ew/transform.h>
 
-#include <gs/transformations.h>
-
-
-
-struct Camera
-{
-	ew::Vec3 position;
-	ew::Vec3 target;
-	float fov;
-	float aspectPlane;
-	float nearPlane;
-	float farPlane;
-	bool orthographic;
-	float orthoSize;
-	ew::Mat4 ViewMatrix()
-	{
-		return Lookat(position, target, ew::Vec3(0, 1, 0));
-	}
-	ew::Mat4 ProjectionMatrix()
-	{
-		if (orthographic)
-			return Orthographic(orthoSize, aspectPlane, nearPlane, farPlane);
-		else
-			return Perspective(fov, aspectPlane, nearPlane, farPlane);
-	}
-};
-struct CameraControls
-{
-	double prevMouseX, prevMouseY;
-	float yaw = 0, pitch = 0;
-	float mouseSensitivity = 0.1f;
-	bool firstMouse = true;
-	float moveSpeed = 5.0f;
-};
+#include <gs/camera.h>
 
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-void moveCamera(GLFWwindow* window, Camera* camera, CameraControls* controls, float deltaTime)
+void moveCamera(GLFWwindow* window, gs::Camera* camera, gs::CameraControls* controls, float deltaTime)
 {
 	if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2))
 	{
@@ -170,9 +137,10 @@ int main() {
 		cubeTransforms[i].position.x = i % (NUM_CUBES / 2) - 0.5;
 		cubeTransforms[i].position.y = i / (NUM_CUBES / 2) - 0.5;
 	}
-	Camera camera;
-	CameraControls cameraControls;
-	float prevTime;
+	gs::Camera camera;
+	gs::CameraControls cameraControls;
+	float prevTime = 0;
+	
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -217,6 +185,11 @@ int main() {
 				ImGui::PopID();
 			}
 			ImGui::Text("Camera");
+			ImGui::Checkbox("Orthographic", &camera.orthographic);
+			ImGui::SliderFloat("FOV", &camera.fov, 10, 100, "%f", 1);
+			ImGui::Text("Camera Controller");
+			ImGui::Text("Yaw: %i", cameraControls.yaw);
+			ImGui::Text("Pitch: %i", cameraControls.pitch);
 			ImGui::End();
 			
 			ImGui::Render();
