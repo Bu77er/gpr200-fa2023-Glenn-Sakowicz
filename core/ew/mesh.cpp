@@ -54,9 +54,15 @@ namespace ew {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	void Mesh::draw() const
+	void Mesh::draw(ew::DrawMode drawMode) const
 	{
 		glBindVertexArray(m_vao);
-		glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, NULL);
+		if (drawMode == DrawMode::TRIANGLES) {
+			glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, NULL);
+		}
+		else {
+			glDrawArrays(GL_POINTS, 0, m_numVertices);
+		}
+		
 	}
 }

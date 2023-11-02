@@ -99,15 +99,27 @@ namespace ew {
 	{
 		glUniform2f(glGetUniformLocation(m_id, name.c_str()), x, y);
 	}
+	void Shader::setVec2(const std::string& name, const ew::Vec2& v) const
+	{
+		setVec2(name, v.x, v.y);
+	}
 	void Shader::setVec3(const std::string& name, float x, float y, float z) const
 	{
 		glUniform3f(glGetUniformLocation(m_id, name.c_str()), x, y, z);
+	}
+	void Shader::setVec3(const std::string& name, const ew::Vec3& v) const
+	{
+		setVec3(name, v.x, v.y, v.z);
 	}
 	void Shader::setVec4(const std::string& name, float x, float y, float z, float w) const
 	{
 		glUniform4f(glGetUniformLocation(m_id, name.c_str()), x, y, z, w);
 	}
-	void Shader::setMat4(const std::string& name, const ew::Mat4 m) const
+	void Shader::setVec4(const std::string& name, const ew::Vec4& v) const
+	{
+		setVec4(name, v.x, v.y, v.z, v.w);
+	}
+	void Shader::setMat4(const std::string& name, const ew::Mat4& m) const
 	{
 		glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &m[0][0]);
 	}
