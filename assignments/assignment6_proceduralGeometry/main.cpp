@@ -88,13 +88,13 @@ int main() {
 	ew::Transform cubeTransform;
 
 	//Create sphere
-	ew::MeshData sphereMeshData = gs::createsphere(0.5f, 64);
+	ew::MeshData sphereMeshData = gs::createsphere(0.3f, 32);
 	ew::Mesh sphereMesh(sphereMeshData);
 	ew::Transform sphereTransform;
 	sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
 
 	//Create cylinder
-	ew::MeshData cylinderMeshData = gs::createCylinder(2.0f, 0.5f, 64);
+	ew::MeshData cylinderMeshData = gs::createCylinder(0.5f, 0.3f, 64);
 	ew::Mesh cylinderMesh(cylinderMeshData);
 	ew::Transform cylinderTransform;
 	cylinderTransform.position = ew::Vec3(2.0f, 0.0f, 0.0f);
