@@ -28,4 +28,12 @@ namespace ew {
 	inline float Clamp(float x, float min, float max) {
 		return std::fminf(std::fmaxf(x, min), max);
 	}
+	/// <summary>
+	/// Returns the sign of x
+	/// </summary>
+	/// <param name="x"></param>
+	/// <returns>1 when x>=0, -1 if x<0</returns>
+	inline float Sign(float x) {
+		return x >= 0 ? 1 : -1;
+	}
 }

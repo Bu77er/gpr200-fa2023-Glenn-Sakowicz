@@ -1,7 +1,6 @@
 #include "cameraController.h"
 namespace ew {
 	void CameraController::Move(GLFWwindow* window, ew::Camera* camera, float deltaTime) {
-		bool prevFirstMouse = firstMouse;
 		//Only allow movement if right mouse is held
 		if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2)) {
 			//Release cursor
