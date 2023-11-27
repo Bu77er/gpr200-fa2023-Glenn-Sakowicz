@@ -29,7 +29,7 @@ ew::CameraController cameraController;
 
 struct Light
 {
-	ew::Vec3 psistion;
+	ew::Vec3 position;
 	ew::Vec3 color;
 };
 struct Material
@@ -72,7 +72,10 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	ew::Shader shader("assets/defaultLit.vert", "assets/defaultLit.frag");
+	Light lights[4];
 	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg",GL_REPEAT,GL_LINEAR);
+
+	ew::Shader emissiveShader("assets/unlit.vert", "assets/unlit.frag");
 
 	//Create cube
 	ew::Mesh cubeMesh(ew::createCube(1.0f));
@@ -85,9 +88,16 @@ int main() {
 	ew::Transform planeTransform;
 	ew::Transform sphereTransform;
 	ew::Transform cylinderTransform;
-	planeTransform.position = ew::Vec3(0, -1.0, 0);
+	planeTransform.position = ew::Vec3(0, -.9, 0);
 	sphereTransform.position = ew::Vec3(-1.5f, 0.0f, 0.0f);
 	cylinderTransform.position = ew::Vec3(1.5f, 0.0f, 0.0f);
+
+	
+
+	float greenLight = 0.0f;
+	float blueLight=0.0f;
+	float yellowLight=0.0f;
+	float redLight=0.0f;
 
 	resetCamera(camera,cameraController);
 
@@ -124,8 +134,78 @@ int main() {
 		shader.setMat4("_Model", cylinderTransform.getModelMatrix());
 		cylinderMesh.draw();
 
-		//TODO: Render point lights
 
+		//TODO: Render point lights
+		/////RED
+			lights[0].position = ew::Vec3(2.0f, 1.0f, 2.0f);
+			lights[0].color = ew::Vec3(redLight, 0.0f, 0.0f);
+			shader.setVec3("_Lights[0].position", lights[0].position);
+			shader.setVec3("_Lights[0].color", lights[0].color);
+			
+
+		/////BLUE
+			lights[1].position = ew::Vec3(2.0f, 1.0f, -2.0f);
+			lights[1].color = ew::Vec3(0.0f, 0.0f, blueLight);
+			shader.setVec3("_Lights[1].position", lights[1].position);
+			shader.setVec3("_Lights[1].color", lights[1].color);
+			
+		
+		/////GREEN
+			lights[2].position = ew::Vec3(-2.0f, 1.0f, -2.0f);
+			lights[2].color = ew::Vec3(0.0f, greenLight, 0.0f);
+			shader.setVec3("_Lights[2].position", lights[2].position);
+			shader.setVec3("_Lights[2].color", lights[2].color);
+		
+		/////YELLOW
+			if (yellowLight != 0.1f)
+			{
+				lights[3].position = ew::Vec3(-2.0f, 1.0f, 2.0f);
+				lights[3].color = ew::Vec3(0.0f, 0.0f, yellowLight);
+				ew::Mesh sphereLightYellow(ew::createSphere(0.1f, 64));
+				ew::Transform sphereLightTransformYellow;
+				sphereLightTransformYellow.position = lights[3].position;
+				shader.setVec3("_Lights[3].position", lights[3].position);
+				shader.setVec3("_Lights[3].color", lights[3].color);
+				shader.setMat4("_Model", sphereLightTransformYellow.getModelMatrix());
+				sphereLightYellow.draw();
+			}
+			else
+			{
+				lights[3].position = ew::Vec3(-2.0f, 1.0f, 2.0f);
+				lights[3].color = ew::Vec3(1.0f, 1.0f, yellowLight);
+				ew::Mesh sphereLightYellow(ew::createSphere(0.1f, 64));
+				ew::Transform sphereLightTransformYellow;
+				sphereLightTransformYellow.position = lights[3].position;
+				shader.setVec3("_Lights[3].position", lights[3].position);
+				shader.setVec3("_Lights[3].color", lights[3].color);
+				shader.setMat4("_Model", sphereLightTransformYellow.getModelMatrix());
+				sphereLightYellow.draw();
+			}
+
+			emissiveShader.use();
+			///RED SPHERE
+			emissiveShader.setVec3("_Color", ew::Vec3(1.0f, 0.0f, 0.0f));
+			ew::Mesh sphereLightRed(ew::createSphere(0.1f, 64));
+			ew::Transform sphereLightTransformRed;
+			sphereLightTransformRed.position = lights[0].position;
+			emissiveShader.setMat4("_Model", sphereLightTransformRed.getModelMatrix());
+			sphereLightRed.draw();
+
+			///BLUE SPHERE
+			emissiveShader.setVec3("_Color", ew::Vec3(0.0f, 0.0f, 1.0f));
+			ew::Mesh sphereLightBlue(ew::createSphere(0.1f, 64));
+			ew::Transform sphereLightTransformBlue;
+			sphereLightTransformBlue.position = lights[1].position;
+			emissiveShader.setMat4("_Model", sphereLightTransformBlue.getModelMatrix());
+			sphereLightBlue.draw();
+
+			///GREEN SPHERE	
+			emissiveShader.setVec3("_Color", ew::Vec3(0.0f, 1.0f, 0.0f));
+			ew::Mesh sphereLightGreen(ew::createSphere(0.1f, 64));
+			ew::Transform sphereLightTransformGreen;
+			sphereLightTransformGreen.position = lights[2].position;
+			shader.setMat4("_Model", sphereLightTransformGreen.getModelMatrix());
+			sphereLightGreen.draw();
 		//Render UI
 		{
 			ImGui_ImplGlfw_NewFrame();
@@ -151,6 +231,10 @@ int main() {
 					resetCamera(camera, cameraController);
 				}
 			}
+			ImGui::DragFloat("Red Light", &redLight, 0.5f, 0.0, 1.0f);
+			ImGui::DragFloat("Blue Light", &blueLight ,0.5f, 0.0, 1.0f);
+			ImGui::DragFloat("Green Light", &greenLight,0.5f, 0.0, 1.0f);
+			ImGui::DragFloat("Yellow Light", &yellowLight,0.5f, 0.0, 0.1f);
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
 			ImGui::End();
